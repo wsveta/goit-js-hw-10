@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Notiflix from 'notiflix';
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
 axios.defaults.baseURL = 'https://api.thecatapi.com/v1';
@@ -28,14 +29,30 @@ refs.selectBreed.addEventListener('change', event => {
       </div>`;
     refs.info.innerHTML = markup;
     refs.load.classList.add('loader');
-  });
+  }).catch(error => {
+      Notiflix.Notify.failure(
+        'Oops! Something went wrong! Try reloading the page!'
+      );
+    console.log(error.message, error);
+    refs.load.classList.add('loader');
+    refs.info.classList.add('error');
+    });
 });
 
-fetchBreeds().then(breeds => {
-  let markup = breeds
-    .map(breed => {
-      return `<option value=${breed.id}>${breed.name}</option>`;
-    })
-    .join('');
-  refs.selectBreed.insertAdjacentHTML('beforeend', markup);
-});
+fetchBreeds()
+  .then(breeds => {
+    let markup = breeds
+      .map(breed => {
+        return `<option value=${breed.id}>${breed.name}</option>`;
+      })
+      .join('');
+    refs.selectBreed.insertAdjacentHTML('beforeend', markup);
+  })
+  .catch(error => {
+    Notiflix.Notify.failure(
+      'Oops! Something went wrong! Try reloading the page!'
+    );
+    console.log(error.message, error);
+    refs.load.classList.add('loader');
+    refs.info.classList.add('error');
+  });
